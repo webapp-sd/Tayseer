@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تيسير أصول الفقه</title>
+    
+    <!-- استدعاء خط عربي جميل (Cairo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- استدعاء مكتبة Tailwind CSS للتصميم -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- إعدادات الألوان والخطوط الجديدة بناءً على الشعار -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        tasees: { // ألوان مستوحاة من الشعار
+                            orange_dark: '#F57F17', // برتقالي غامق
+                            orange_light: '#FFB300', // برتقالي فاتح
+                            white: '#FFFFFF',      // أبيض
+                            gray_text: '#424242',  // رمادي للنص
+                            gray_light: '#EEEEEE'  // رمادي فاتح للخلفيات
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* إخفاء شريط التمرير المزعج مع استمرار وظيفة التمرير */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* تأثير بسيط عند الضغط */
+        .active-scale:active {
+            transform: scale(0.98);
+        }
+
+        /* أنماط خاصة للاختبار */
+        .answer-option {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .answer-option:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        .answer-option.selected {
+            border-color: #F57F17;
+            background-color: #FFFBEA; /* Light yellow background */
+        }
+        .answer-option.correct {
+            background-color: #D4EDDA; /* Light green */
+            border-color: #28A745;
+            color: #155724;
+            font-weight: bold;
+        }
+        .answer-option.incorrect {
+            background-color: #F8D7DA; /* Light red */
+            border-color: #DC3545;
+            color: #721C24;
+            opacity: 0.7;
+        }
+        
+        /* تأثيرات دخول جديدة */
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* تحسينات للشاشات الصغيرة */
+        @media (max-width: 640px) {
+            .lesson-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-tasees-gray_light text-tasees-gray_text min-h-screen flex flex-col">
+
+    <!-- 1. الهيدر (العنوان العلوي) -->
+    <header class="bg-tasees-orange_dark text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
+            
+            <!-- زر العودة (يظهر فقط داخل الدرس) -->
+            <button id="backButton" onclick="goHome()" class="hidden p-2 rounded-full hover:bg-white/20 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </button>
+
+            <h1 id="mainTitle" class="text-xl font-bold flex-grow text-center">تيسير أصول الفقه</h1>
+            
+            <!-- عنصر وهمي للحفاظ على التوازن -->
+            <div class="w-10"></div>
+        </div>
+    </header>
+
+    <!-- 2. منطقة المحتوى الرئيسية -->
+    <main class="flex-grow max-w-3xl mx-auto w-full p-4">
+        
+        <!-- قائمة الدروس (الصفحة الرئيسية) -->
+        <div id="homeView" class="space-y-6 transition-all duration-300 animate-fade-in">
+            <div class="text-center mb-8">
+                <p class="text-gray-600 text-lg">دروس منهجية مبسطة في علم الأصول</p>
+                <div class="h-1 w-20 bg-tasees-orange_light mx-auto mt-2 rounded-full"></div>
+            </div>
+            
+            <!-- بطاقة الاختبار النهائي -->
+            <div onclick="startFinalExam()" class="bg-gradient-to-r from-tasees-orange_dark to-tasees-orange_light text-white p-6 rounded-xl shadow-lg cursor-pointer transition-all active-scale flex items-center border border-tasees-orange_light">
+                <div class="bg-white/20 w-14 h-14 rounded-full flex items-center justify-center ml-4 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="flex-grow">
+                    <h3 class="font-bold text-xl">الاختبار النهائي الشامل</h3>
+                    <p class="text-white/90 mt-1">60 سؤالاً من جميع المحاضرات</p>
+                </div>
+                <div class="text-white/80">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- سيتم توليد قائمة الدروس هنا بالجافاسكريبت -->
+            <div id="lessonsList" class="grid gap-5"></div>
+        </div>
+
+        <!-- تفاصيل الدرس (مخفية افتراضياً) -->
+        <div id="lessonView" class="hidden space-y-6 animate-fade-in">
+            
+            <!-- عنوان الدرس -->
+            <h2 id="lessonTitle" class="text-2xl font-bold text-tasees-orange_dark text-center mt-2"></h2>
+            
+            <!-- مشغل الفيديو -->
+            <div class="rounded-xl overflow-hidden shadow-lg bg-black aspect-video relative group">
+                <iframe id="videoFrame" class="w-full h-full" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
+            <!-- زر فتح في يوتيوب -->
+            <a id="youtubeLink" href="#" target="_blank" class="flex items-center justify-center gap-2 bg-red-600 text-white py-3 px-4 rounded-lg font-bold hover:bg-red-700 transition active-scale shadow-md">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                شاهد على تطبيق يوتيوب
+            </a>
+
+            <!-- نص الدرس -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 lesson-card">
+                <div class="flex items-center gap-2 mb-4 border-b pb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-tasees-orange_light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <h3 class="text-lg font-bold text-gray-800">ملخص الدرس</h3>
+                </div>
+                <div id="lessonContent" class="text-lg leading-relaxed text-gray-700 whitespace-pre-line">
+                    <!-- النص سيظهر هنا -->
+                </div>
+            </div>
+
+            <!-- زر بدء الاختبار -->
+            <button id="startQuizButton" onclick="startQuiz()" class="w-full mt-6 flex items-center justify-center gap-2 bg-tasees-orange_light text-tasees-orange_dark py-3 px-4 rounded-lg font-bold hover:bg-tasees-orange_dark hover:text-white transition active-scale shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m-2 4h-4m4 0h.01M16 4h.01M12 4h.01M8 4h.01M9 19h6" />
+                </svg>
+                ابدأ اختبار المحاضرة
+            </button>
+        </div>
+        
+        <!-- واجهة الاختبار (مخفية افتراضياً) -->
+        <div id="quizView" class="hidden space-y-6 animate-fade-in">
+            <div id="quizHeader" class="text-center bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                <h3 id="quizLessonTitle" class="text-xl font-bold text-tasees-orange_dark"></h3>
+                <p class="text-gray-600 mt-1">السؤال <span id="currentQuestionNum">1</span> من <span id="totalQuestionsNum"></span></p>
+                <div id="progressContainer" class="mt-4 h-2 bg-tasees-gray_light rounded-full overflow-hidden">
+                    <div id="progressBar" class="h-full bg-tasees-orange_light transition-all duration-300 ease-out"></div>
+                </div>
+            </div>
+
+            <div id="questionContainer" class="bg-white p-6 rounded-xl shadow-md border border-gray-100 space-y-4">
+                <p id="questionText" class="text-xl font-semibold text-gray-800"></p>
+                <div id="answerOptions" class="grid gap-3">
+                    <!-- خيارات الإجابة هنا -->
+                </div>
+                <div id="rationaleContainer" class="hidden mt-4 p-3 rounded-lg bg-tasees-gray_light text-sm border-r-4 border-tasees-orange_dark">
+                    <span class="font-bold text-tasees-orange_dark">التوضيح:</span> <span id="rationaleText"></span>
+                </div>
+                <div id="hintContainer" class="mt-2 text-sm text-gray-500 italic hidden">
+                    <span class="font-bold">تلميح:</span> <span id="hintText"></span>
+                </div>
+            </div>
+
+            <div id="quizControls" class="flex justify-between items-center mt-6">
+                <button id="showHintButton" onclick="showHint()" class="p-2 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition active-scale">عرض التلميح</button>
+                <button id="nextButton" onclick="nextQuestion()" class="px-6 py-3 bg-tasees-orange_dark text-white font-bold rounded-lg hover:bg-tasees-orange_light transition active-scale shadow-md disabled:opacity-50" disabled>
+                    السؤال التالي
+                </button>
+            </div>
+        </div>
+            
+        <!-- واجهة النتيجة (تظهر بعد انتهاء الأسئلة) -->
+        <div id="resultsView" class="hidden text-center p-8 bg-white rounded-xl shadow-lg space-y-4">
+            <h3 class="text-3xl font-bold text-tasees-orange_dark">نتائج الاختبار</h3>
+            <p class="text-5xl font-extrabold text-tasees-orange_dark"><span id="finalScore">0</span> / <span id="totalQuestionsResult">0</span></p>
+            <div class="flex justify-center items-center gap-2">
+                <span id="percentage" class="text-2xl font-bold text-gray-700"></span>
+                <span id="grade" class="text-xl font-bold bg-tasees-orange_light text-tasees-orange_dark px-3 py-1 rounded-full"></span>
+            </div>
+            <p id="resultMessage" class="text-xl font-semibold"></p>
+            <div class="flex gap-4 mt-6">
+                <button onclick="goHome()" class="flex-1 py-3 bg-tasees-orange_light text-tasees-orange_dark font-bold rounded-lg hover:bg-tasees-orange_dark hover:text-white transition active-scale shadow-md">
+                    العودة للقائمة الرئيسية
+                </button>
+                <button id="retryButton" onclick="retryQuiz()" class="flex-1 py-3 bg-tasees-gray_light text-gray-700 font-bold rounded-lg hover:bg-gray-300 transition active-scale shadow-md">
+                    إعادة الاختبار
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 3. التذييل (Footer) - حقوق النشر ومعلومات التطبيق -->
+    <footer class="bg-tasees-orange_dark text-white py-6 mt-8">
+        <div class="max-w-3xl mx-auto px-4 text-center space-y-4">
+            
+            <!-- قسم معلومات الدورة والمبرمج -->
+            <div class="text-sm border-b border-tasees-orange_light/50 pb-4 mb-4">
+                <p class="font-bold text-lg mb-2">عن التطبيق</p>
+                <p>الدورة قُدمت بواسطة: <span class="font-semibold">أ. محمد حسين عبد الرحمن الشجرة</span></p>
+                <p>مبرمج الموقع: <span class="font-semibold">د. ثريا صلاح مرتضى سيدأحمد</span></p>
+            </div>
+
+            <!-- الشعار وحقوق النشر -->
+            <div class="flex flex-col items-center space-y-3">
+                <p class="text-sm">&copy; جميع الحقوق محفوظة لمركز تأسيس للدراسات والنشر</p>
+                <div class="flex gap-4 text-sm">
+                    <a href="https://www.tasees.org/" target="_blank" class="hover:underline text-tasees-orange_light">الموقع الإلكتروني</a>
+                    <span class="text-white">|</span>
+                    <a href="https://youtube.com/channel/UCeyp6BMIFHPWLzYbRRkJ0eg?si=0GYLPoFnrV_1tgOO" target="_blank" class="hover:underline text-tasees-orange_light">قناة اليوتيوب</a>
+                    <span class="text-white">|</span>
+                    <a href="https://t.me/taseescenter" target="_blank" class="hover:underline text-tasees-orange_light">قناة التيليجرام</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 4. الجافاسكريبت (البيانات والمنطق) -->
+    <script>
+        // بيانات الدروس بالترتيب الجديد والمحتوى المدمج/المُلخص
+        const lessons = [
+            {
+                id: 1,
+                title: "المحاضرة الأولى: مدخل لعلم أصول الفقه",
+                videoId: "b_yYNqeXh8Q",
+                content: "1. تعريف الأصول:\nالأصول جمع أصل، وهو لغة: ما ينبني عليه غيره.\nواصطلاحاً يطلق على عدة معانٍ منها: الدليل، والراجح، والقاعدة، والاستصحاب.\n\n2. تعريف الفقه:\nلغة: الفهم. واصطلاحاً: العلم بالأحكام الشرعية العملية المكتسبة من أدلتها التفصيلية.\n\n3. تعريف علم أصول الفقه:\nهي القواعد والأدلة العامة التي يُتوصل بها إلى الفقه.\n\n4. موضوعات هذا العلم:\nيتناول هذا العلم البحث في أدلة التشريع (الكتاب، السنة، الإجماع، القياس)، وطرق استنباط الأحكام منها. والفرق بين القواعد الأصولية والقواعد الفقهية؛ فالقاعدة الأصولية هي وسيلة لاستخراج الأحكام، بينما القاعدة الفقهية هي جملة تجمع جزئيات فقهية كثيرة (مثل: المشقة تجلب التيسير)."
+            },
+            {
+                id: 2,
+                title: "المحاضرة الثانية: المدلول (الأحكام التكليفية والوضعية والمحكوم عليه)",
+                videoId: "AbubBOZXQko",
+                content: "هذا الملخص يجمع محتوى عدة دروس سابقة حول الأحكام الشرعية والمكلف، مرتباً حسب التسلسل الأصولي:\n\n**أولاً: الحكم الشرعي (مفهومه وأقسامه)**\n1. تعريف الحكم:\nهو خطاب الشارع المتعلق بأفعال المكلفين اقتضاءً (طلباً) أو تخييراً أو وضعاً.\n\n2. الحكم التكليفي (الأحكام الخمسة):\nهو ما اقتضى طلب فعل أو ترك أو تخيير. أقسامه خمسة:\n- **الواجب:** ما طلب الشارع فعله على وجه الإلزام. (كالصلاة).\n- **المندوب:** ما طلب الشارع فعله لا على وجه الإلزام. (كالسنن الرواتب).\n- **الحرام:** ما طلب الشارع تركه على وجه الحتم والإلزام. (كالزنا).\n- **المكروه:** ما طلب الشارع تركه لا على وجه الحتم. (كإضاعة المال).\n- **المباح:** ما خيَّر الشارع المكلف بين فعله وتركه. (كالأكل والشرب).\n\n3. الحكم الوضعي:\nهو ما يقتضي جعل شيء سبباً لشيء آخر، أو شرطاً له، أو مانعاً منه، ولا يشترط فيه قدرة المكلف:\n- **السبب:** العلامة الدالة على وجود الحكم (مثل: دخول الوقت سبب للصلاة).\n- **الشرط:** ما يلزم من عدمه العدم (مثل: الوضوء شرط للصلاة).\n- **المانع:** وصف يمنع ثبوت الحكم (م مثل: الدين مانع من الزكاة).\n- **الصحة والبطلان:** الفعل الصحيح ما وافق الشرع، والباطل ما اختل أحد أركانه.\n- **العزيمة والرخصة:** العزيمة هي الحكم الأصلي، والرخصة هي الحكم المخفف لعذر.\n\n**ثانياً: المحكوم عليه (المكلف)**\n1. شروط التكليف: العقل والبلوغ. فلا تكليف على مجنون ولا صبي.\n2. الأهلية:\n- أهلية الوجوب (الذمة): تثبت للإنسان بمجرد الحياة.\n- أهلية الأداء: صلاحية الإنسان لصدور الأفعال منه شرعاً، ومناطها العقل والتمييز.\n3. عوارض الأهلية: أمور تطرأ على الإنسان فتؤثر في مسؤوليته، منها: الجنون، والنسيان، والجهل، والسكر، والإكراه."
+            },
+            {
+                id: 3,
+                title: "المحاضرة الثالثة: الدليل الأول والثاني (القرآن والسنة)",
+                videoId: "AXKG5m3TeCU",
+                content: "هذا ملخص تركيبي للموضوع الجديد. يرجى مراجعة الكتاب للتأكد من التفاصيل:\n\n**1. القرآن الكريم (الدليل الأول):**\n- تعريفه: هو كلام الله المنزل على نبيه محمد ﷺ المتعبد بتلاوته، المُعجِزُ في لفظه ومعناه.\n- حجيته: هو الأصل الأول الذي تستنبط منه جميع الأحكام الشرعية، وحجيته قطعية الثبوت.\n- طرق دلالته: تكون بالمنطوق (الصريح أو الضمني) وبالمفهوم (الموافقة والمخالفة).\n\n**2. السنة النبوية (الدليل الثاني):**\n- تعريفه: ما صدر عن النبي ﷺ من قول أو فعل أو تقرير.\n- حجيته: هي الأصل الثاني للتشريع، وهي تابعة للقرآن ومبينة له ومفصلة لمجمله ومقيدة لمطلقه، وحجيتها قطعية إجمالاً وظنية تفصيلاً.\n- أقسامها: سنة قولية، سنة فعلية، سنة تقريرية."
+            },
+            {
+                id: 4,
+                title: "المحاضرة الرابعة: الدليل الثالث والرابع (الإجماع والقياس)",
+                videoId: "TRfvCqxukrI",
+                content: "هذا ملخص تركيبي للموضوع الجديد. يرجى مراجعة الكتاب للتأكد من التفاصيل:\n\n**1. الإجماع (الدليل الثالث):**\n- تعريفه: اتفاق جميع المجتهدين من أمة محمد ﷺ بعد وفاته على حكم شرعي في واقعة معينة.\n- حجيته: حجيته قطعية ومُلزِمة، ولا يجوز مخالفته؛ لقوله ﷺ: «لا تجتمع أمتي على ضلالة».\n- أقسامه: إجماع صريح (تصريح كل مجتهد برأيه) وإجماع سكوتي (صدور القول من البعض وسكوت الباقين، وهو محل خلاف).\n\n**2. القياس (الدليل الرابع):**\n- تعريفه: إلحاق واقعة لا نص فيها بواقعة ورد فيها نص (الأصل) لاشتراكهما في علة الحكم.\n- أركانه: الأصل، الفرع، الحكم، العلة.\n- حجيته: هو دليل ظني، ولكنه حجة شرعية معتبرة عند الجمهور، وهو مصدر غني للتشريع."
+            },
+            {
+                id: 5,
+                title: "المحاضرة الخامسة: أدلة تكميلية والدلالة (الاستصحاب، والمصالح المرسلة...)",
+                videoId: "yRhCAFpZ5aQ",
+                content: "هذا ملخص تركيبي للموضوع الجديد. يرجى مراجعة الكتاب للتأكد من التفاصيل:\n\n**1. الاستصحاب:**\n- معناه: بقاء الأمر على ما كان عليه حتى يثبت ما يغيره. (مثال: الأصل براءة الذمة حتى يثبت الاشتغال بدين).\n- حجيته: آخر ما يلجأ إليه المجتهد عند فقد الأدلة الأخرى.\n\n**2. المصالح المرسلة:**\n- معناه: ما لم يرد فيه دليل بالاعتبار ولا بالإلغاء، ولكن تقتضيه مصلحة عامة، كجمع القرآن وتدوين الدواوين.\n- حجيته: حجة عند المالكية والحنابلة، بشروط منها أن تكون المصلحة ضرورية أو حاجية.\n\n**3. شرع من قبلنا، وقول الصحابي:**\n- شرع من قبلنا: ما شرعه الله للأمم السابقة. يكون حجة بشرط عدم نسخه وبشرط ذكره في شرعنا بصفة التقرير.\n- قول الصحابي: حجة عند الحنفية والمالكية والحنابلة، وهو ليس حجة على الصحابي الآخر.\n\n**4. الدلالة:**\n- أنواعها: دلالة المنطوق (دلالة اللفظ على ما ذكر فيه) ودلالة المفهوم (دلالة اللفظ على ما لم يذكر فيه، كمفهوم المخالفة)."
+            },
+            {
+                id: 6,
+                title: "المحاضرة السادسة: المستدل (مبحث الاجتهاد والتقليد)",
+                videoId: "GUcuAlh2HKw",
+                content: "هذا ملخص تركيبي للموضوع الجديد. يرجى مراجعة الكتاب للتأكد من التفاصيل:\n\n**1. الاجتهاد:**\n- تعريفه: بذل الجهد في استنباط الحكم الشرعي من الأدلة التفصيلية.\n- شروط المجتهد: العلم باللغة، والقرآن والسنة، ومواطن الإجماع، ومقاصد الشريعة، والقياس، والمعرفة بعلم الأصول.\n- أقسامه: اجتهاد مطلق (نادر الوجود بعد عصور الصحابة)، واجتهاد مقيد (داخل المذهب).\n\n**2. التقليد:**\n- تعريفه: الأخذ بقول الغير دون معرفة دليله.\n- حكمه: يجب على العامي أن يقلد مجتهداً، ولا يجوز للمجتهد أن يقلد غيره. التقليد ممنوع في العقائد."
+            }
+        ];
+
+        // ----------------------------------------------------
+        // بيانات الاختبارات من ملف الاختبار الشامل
+        // ----------------------------------------------------
+        const quizzes = {
+            1: [
+                {
+                    question: "ما هو موضوع علم أصول الفقه الرئيسي؟",
+                    options: [
+                        { text: "الأدلة الشرعية الإجمالية وكيفية الاستفادة منها.", isCorrect: true },
+                        { text: "الفروع الفقهية التفصيلية وحكمها العملي.", isCorrect: false },
+                        { text: "أحوال المكلفين والشروط المتعلقة بهم.", isCorrect: false },
+                        { text: "تاريخ التشريع الإسلامي وأطواره.", isCorrect: false }
+                    ],
+                    hint: "موضوع هذا العلم هو الأساس الذي تُبنى عليه الأحكام.",
+                    rationale: "موضوع علم أصول الفقه هو الأدلة الإجمالية، بينما الفقه التفصيلي هو ثمرة هذا العلم."
+                },
+                {
+                    question: "يُعرّف علم أصول الفقه بأنه:",
+                    options: [
+                        { text: "العلم بالأحكام الشرعية العملية المكتسبة من أدلتها التفصيلية.", isCorrect: false },
+                        { text: "القواعد التي يتوصل بها إلى استنباط الأحكام الشرعية العملية.", isCorrect: true },
+                        { text: "خطاب الشارع المتعلق بأفعال المكلفين اقتضاءً أو تخييراً.", isCorrect: false },
+                        { text: "الإجماع السكوتي للصحابة على حكم ما.", isCorrect: false }
+                    ],
+                    hint: "التعريف يركز على مجموعة الضوابط والطرق المنهجية.",
+                    rationale: "التعريف الصحيح يصف 'القواعد' المنهجية التي يستخدمها المجتهد لاستخراج الأحكام."
+                },
+                {
+                    question: "تُعد الفروع الفقهية التفصيلية هي الغاية النهائية لعلم أصول الفقه.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "فكر في العلاقة بين الأصول والفروع.",
+                    rationale: "الفروع الفقهية هي ثمرة علم الأصول وليست موضوعه الرئيسي، فالغاية هي استنباط الأحكام."
+                },
+                {
+                    question: "علم أصول الفقه يدرس الأدلة الـ (......)، بينما علم الفقه يدرس الأدلة الـ (......).",
+                    options: [
+                        { text: "الإجمالية، التفصيلية", isCorrect: true },
+                        { text: "التفصيلية، الإجمالية", isCorrect: false },
+                        { text: "القطعية، الظنية", isCorrect: false },
+                        { text: "الأصولية، الفقهية", isCorrect: false }
+                    ],
+                    hint: "الأصول يهتم بالكليات والفروع يهتم بالجزئيات.",
+                    rationale: "علم الأصول يدرس الأدلة الإجمالية (القواعد العامة)، بينما الفقه يدرس الأدلة التفصيلية (التطبيقات)."
+                },
+                {
+                    question: "هدف دراسة أصول الفقه هو:",
+                    options: [
+                        { text: "حفظ النصوص الشرعية وفهم معانيها.", isCorrect: false },
+                        { text: "معرفة تاريخ الفقه الإسلامي وتطوره.", isCorrect: false },
+                        { text: "دراسة حياة الفقهاء وأقوالهم.", isCorrect: false },
+                        { text: "تمكين المجتهد من معرفة طرق الاستنباط الصحيحة.", isCorrect: true }
+                    ],
+                    hint: "الهدف هو تمكين المجتهد من الاستنباط.",
+                    rationale: "الهدف الأساسي من دراسة أصول الفقه هو تمكين المجتهد من معرفة كيفية استنباط الأحكام من أدلتها."
+                },
+                {
+                    question: "اذكر اثنين من مباحث علم أصول الفقه الأساسية (الأركان):",
+                    options: [
+                        { text: "الأدلة (المصادر)، والأحكام، والمستدل (المجتهد)", isCorrect: true },
+                        { text: "القرآن، والسنة، والإجماع", isCorrect: false },
+                        { text: "الواجب، والمندوب، والمباح", isCorrect: false },
+                        { text: "العقل، والبلوغ، والنطق", isCorrect: false }
+                    ],
+                    hint: "المباحث الرئيسية تتعلق بالأدلة والأحكام والمجتهد.",
+                    rationale: "مباحث علم أصول الفقه الأساسية هي: الأدلة (المصادر)، والأحكام، والمستدل (المجتهد)."
+                },
+                {
+                    question: "نشأ علم أصول الفقه مستقلاً في عصر الصحابة.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "التدوين الرسمي كان في وقت لاحق.",
+                    rationale: "علم أصول الفقه لم ينشأ مستقلاً في عصر الصحابة، بل كانت القواعد موجودة لكن تدوينه ظهر لاحقاً."
+                },
+                {
+                    question: "إذا قيل: \"القرآن حجة\"، فهذا يندرج تحت مباحث:",
+                    options: [
+                        { text: "الأحكام (الحكم الشرعي)", isCorrect: false },
+                        { text: "المستدل (المجتهد)", isCorrect: false },
+                        { text: "الأدلة (أصول الفقه)", isCorrect: true },
+                        { text: "التعارض والترجيح", isCorrect: false }
+                    ],
+                    hint: "الحجية تتعلق بقيمة الدليل.",
+                    rationale: "القول بأن القرآن حجة يندرج تحت مباحث الأدلة في علم أصول الفقه."
+                },
+                {
+                    question: "ما الفرق بين الحكم الفقهي والحكم الأصولي؟",
+                    options: [
+                        { text: "الحكم الفقهي كلي وقاعدي، والأصولي جزئي وعملي", isCorrect: false },
+                        { text: "الحكم الفقهي جزئي وعملي، والأصولي كلي وقاعدي", isCorrect: true },
+                        { text: "لا فرق بينهما", isCorrect: false },
+                        { text: "الحكم الفقهي نظري، والأصولي تطبيقي", isCorrect: false }
+                    ],
+                    hint: "الأصولي يتعلق بالقواعد العامة، والفقهي بالتطبيقات.",
+                    rationale: "الحكم الفقهي جزئي وعملي (كحكم الصلاة)، والحكم الأصولي كلي وقاعدي (كحجية القرآن)."
+                },
+                {
+                    question: "\"فعل النبي صلى الله عليه وسلم\" يعد دليلاً مجملاً يُبحث في أصول الفقه.",
+                    options: [
+                        { text: "صح", isCorrect: true },
+                        { text: "خطأ", isCorrect: false }
+                    ],
+                    hint: "فعل النبي ﷺ من مصادر التشريع.",
+                    rationale: "فعل النبي ﷺ يعد دليلاً كلياً يُبحث في أصول الفقه من حيث حجيته وطرق دلالته."
+                }
+            ],
+            2: [
+                {
+                    question: "أي الأحكام التالية يتعلق بالاقتضاء الجازم بالفعل؟",
+                    options: [
+                        { text: "الواجب", isCorrect: true },
+                        { text: "المندوب", isCorrect: false },
+                        { text: "المباح", isCorrect: false },
+                        { text: "المكروه", isCorrect: false }
+                    ],
+                    hint: "الاقتضاء الجازم يعني الإلزام والإلحاح.",
+                    rationale: "الواجب هو الحكم التكليفي الذي يتعلق بالاقتضاء الجازم بالفعل، حيث يثاب فاعله ويعاقب تاركه."
+                },
+                {
+                    question: "الحكم الذي يثاب على فعله ولا يعاقب على تركه هو:",
+                    options: [
+                        { text: "الواجب", isCorrect: false },
+                        { text: "المندوب (أو المستحب)", isCorrect: true },
+                        { text: "الحرام", isCorrect: false },
+                        { text: "المباح", isCorrect: false }
+                    ],
+                    hint: "هذا الحكم ليس إلزامياً ولكنه محبوب.",
+                    rationale: "المندوب هو الحكم التكليفي الذي يثاب على فعله ولا يعاقب على تركه."
+                },
+                {
+                    question: "الإباحة تُعد من الأحكام التكليفية التي فيها طلب بالفعل أو الترك.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "الإباحة تتعلق بالتخيير لا بالطلب.",
+                    rationale: "الإباحة تخيير بين الفعل والترك، وليست اقتضاء بطلب الفعل أو الترك."
+                },
+                {
+                    question: "عرّف الحكم الوضعي:",
+                    options: [
+                        { text: "خطاب الشارع المتعلق بطلب فعل أو ترك", isCorrect: false },
+                        { text: "خطاب الشارع بجعل الشيء سبباً لشيء أو شرطاً له أو مانعاً منه", isCorrect: true },
+                        { text: "خطاب الشارع بالتخيير بين الفعل والترك", isCorrect: false },
+                        { text: "خطاب الشارع بالعقوبة على الفعل", isCorrect: false }
+                    ],
+                    hint: "الحكم الوضعي يتعلق بالأسباب والشروط والموانع.",
+                    rationale: "الحكم الوضعي هو خطاب الشارع بجعل الشيء سبباً لشيء أو شرطاً له أو مانعاً منه."
+                },
+                {
+                    question: "\"دخول وقت الصلاة\" يعد مثالاً لـ:",
+                    options: [
+                        { text: "الشرط", isCorrect: false },
+                        { text: "المانع", isCorrect: false },
+                        { text: "السبب", isCorrect: true },
+                        { text: "الصحة", isCorrect: false }
+                    ],
+                    hint: "يدل على وجود الحكم.",
+                    rationale: "دخول وقت الصلاة يعد سبباً لوجوب الصلاة، حيث يلزم من وجوده الوجوب."
+                },
+                {
+                    question: "ما هو الوصف الذي يدل على ترتب الآثار المطلوبة شرعاً على الفعل؟",
+                    options: [
+                        { text: "الفساد", isCorrect: false },
+                        { text: "البطلان", isCorrect: false },
+                        { text: "المانع", isCorrect: false },
+                        { text: "الصحة", isCorrect: true }
+                    ],
+                    hint: "هذا الوصف يعني أن الفعل موافق للشرع.",
+                    rationale: "الصحة هي الوصف الذي يدل على ترتب الآثار المطلوبة شرعاً على الفعل."
+                },
+                {
+                    question: "\"الجهل\" يعتبر من شروط الأحكام التكليفية.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "الجهل قد يكون عذراً.",
+                    rationale: "الجهل غالباً ما يكون عذراً أو مانعاً من المؤاخذة، وليس شرطاً لوجود الحكم التكليفي."
+                },
+                {
+                    question: "اذكر الفرق بين الحرام والمكروه من حيث الطلب:",
+                    options: [
+                        { text: "الحرام طلب بالترك الجازم، والمكروه طلب بالترك غير الجازم", isCorrect: true },
+                        { text: "الحرام طلب بالفعل الجازم، والمكروه طلب بالفعل غير الجازم", isCorrect: false },
+                        { text: "لا فرق بينهما", isCorrect: false },
+                        { text: "الحرام طلب بالترك غير الجازم، والمكروه طلب بالترك الجازم", isCorrect: false }
+                    ],
+                    hint: "الجزم يعني الإلزام والحتم.",
+                    rationale: "الحرام طلب بالترك الجازم (اقتضاء جازم)، والمكروه طلب بالترك غير الجازم."
+                },
+                {
+                    question: "\"عدم وجود المال النصاب\" بالنسبة لوجوب الزكاة يعد:",
+                    options: [
+                        { text: "مانعاً", isCorrect: true },
+                        { text: "سبباً", isCorrect: false },
+                        { text: "شرطاً", isCorrect: false },
+                        { text: "رخصة", isCorrect: false }
+                    ],
+                    hint: "يمنع ثبوت الحكم.",
+                    rationale: "عدم وجود المال النصاب يعد مانعاً من وجوب الزكاة، حيث يمنع ثبوت الحكم مع وجود سببه."
+                },
+                {
+                    question: "النية شرط لصحة الوضوء، وهذا يندرج تحت الأحكام التكليفية.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "النية تتعلق بوصف الفعل لا بالتكليف.",
+                    rationale: "الشرط يندرج تحت الأحكام الوضعية، وليس التكليفية."
+                }
+            ],
+            3: [
+                {
+                    question: "الدليل الذي يُعد **قطعي الثبوت** عند جميع الأصوليين هو:",
+                    options: [
+                        { text: "القرآن الكريم", isCorrect: true },
+                        { text: "السنة النبوية", isCorrect: false },
+                        { text: "الإجماع", isCorrect: false },
+                        { text: "القياس", isCorrect: false }
+                    ],
+                    hint: "هذا الدليل متواتر بنقله.",
+                    rationale: "القرآن الكريم هو الدليل الوحيد القطعي الثبوت عند جميع الأصوليين."
+                },
+                {
+                    question: "ما هي أبرز وظيفة للسنة النبوية تجاه القرآن الكريم؟",
+                    options: [
+                        { text: "نسخ أحكام القرآن", isCorrect: false },
+                        { text: "تبيان وتفسير ما أجمل في القرآن وتخصيص عامه", isCorrect: true },
+                        { text: "إلغاء أحكام القرآن", isCorrect: false },
+                        { text: "تأكيد أحكام القرآن فقط", isCorrect: false }
+                    ],
+                    hint: "السنة تبين المجمل وتخصص العام.",
+                    rationale: "من أبرز وظائف السنة النبوية تبيان وتفسير ما أجمل في القرآن وتخصيص عامه."
+                },
+                {
+                    question: "السنة التي تشتمل على الأقوال التي قالها النبي صلى الله عليه وسلم هي:",
+                    options: [
+                        { text: "السنة الفعلية", isCorrect: false },
+                        { text: "السنة القولية", isCorrect: true },
+                        { text: "السنة التقريرية", isCorrect: false },
+                        { text: "السنة الاجتهادية", isCorrect: false }
+                    ],
+                    hint: "تتعلق بأقوال النبي ﷺ.",
+                    rationale: "السنة القولية هي التي تشتمل على الأقوال التي قالها النبي ﷺ."
+                },
+                {
+                    question: "دلالة آيات القرآن الكريم دائماً قطعية لا تحتمل التأويل.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "بعض الآيات تحتمل أكثر من تفسير.",
+                    rationale: "بعض آيات القرآن الكريم ظنية الدلالة تحتمل التأويل والتفسير."
+                },
+                {
+                    question: "متى تكون السنة النبوية دليلاً مستقلاً للتشريع؟",
+                    options: [
+                        { text: "عندما تخالف القرآن", isCorrect: false },
+                        { text: "عندما تأتي بأحكام لم يرد بها نص في القرآن الكريم", isCorrect: true },
+                        { text: "عندما تتعارض مع الإجماع", isCorrect: false },
+                        { text: "عندما تكون ظنية الثبوت", isCorrect: false }
+                    ],
+                    hint: "السنة مصدر مستقل للتشريع.",
+                    rationale: "تكون السنة النبوية دليلاً مستقلاً للتشريع عندما تأتي بأحكام لم يرد بها نص في القرآن الكريم."
+                },
+                {
+                    question: "ما الذي يُثبت حجية السنة النبوية التشريعية؟",
+                    options: [
+                        { text: "العقل والمنطق", isCorrect: false },
+                        { text: "الإجماع فقط", isCorrect: false },
+                        { text: "القياس", isCorrect: false },
+                        { text: "النصوص القرآنية التي تأمر بطاعة الرسول صلى الله عليه وسلم", isCorrect: true }
+                    ],
+                    hint: "الأمر بطاعة الرسول في القرآن.",
+                    rationale: "تثبت حجية السنة النبوية بالنصوص القرآنية التي تأمر بطاعة الرسول ﷺ."
+                },
+                {
+                    question: "تُعتبر السنة المتواترة قطعية الثبوت والدلالة.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "التواتر يقطع بالثبوت لكن الدلالة قد تكون ظنية.",
+                    rationale: "السنة المتواترة قطعية الثبوت، لكن قد تكون ظنية الدلالة."
+                },
+                {
+                    question: "أعط مثالاً على كيفية تخصيص السنة لعام القرآن:",
+                    options: [
+                        { text: "تخصيص القرآن للعموم في \"السرقة\" بتحديد النصاب في السنة", isCorrect: true },
+                        { text: "نسخ أحكام القرآن بالسنة", isCorrect: false },
+                        { text: "إلغاء أحكام القرآن بالسنة", isCorrect: false },
+                        { text: "تأكيد أحكام القرآن بالسنة", isCorrect: false }
+                    ],
+                    hint: "تحديد النصاب في السرقة.",
+                    rationale: "من أمثلة تخصيص السنة لعام القرآن: تخصيص عموم آية السرقة بتحديد النصاب في السنة."
+                },
+                {
+                    question: "ما هو المصدر التشريعي الذي يُعد المصدر الأول والأصل لجميع الأدلة الأخرى؟",
+                    options: [
+                        { text: "السنة النبوية", isCorrect: false },
+                        { text: "الإجماع", isCorrect: false },
+                        { text: "القرآن الكريم", isCorrect: true },
+                        { text: "القياس", isCorrect: false }
+                    ],
+                    hint: "هو الأصل والأساس.",
+                    rationale: "القرآن الكريم هو المصدر الأول والأصل لجميع الأدلة الأخرى."
+                },
+                {
+                    question: "السنة النبوية كلها ظنية الثبوت.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "هناك سنة متواترة.",
+                    rationale: "هناك سنة متواترة قطعية الثبوت، فليس كل السنة ظنية الثبوت."
+                }
+            ],
+            4: [
+                {
+                    question: "الإجماع هو اتفاق جميع (......) من أمة محمد صلى الله عليه وسلم في عصر من العصور بعد وفاته على حكم شرعي",
+                    options: [
+                        { text: "العلماء", isCorrect: false },
+                        { text: "المجتهدين", isCorrect: true },
+                        { text: "المسلمين", isCorrect: false },
+                        { text: "الفقهاء", isCorrect: false }
+                    ],
+                    hint: "الاتفاق من أهل الاجتهاد.",
+                    rationale: "الإجماع هو اتفاق جميع المجتهدين من أمة محمد ﷺ على حكم شرعي."
+                },
+                {
+                    question: "الإجماع هو الدليل الوحيد الذي يجمع بين قطعية الثبوت وقطعية الدلالة (عند تحقق شروطه).",
+                    options: [
+                        { text: "صح", isCorrect: true },
+                        { text: "خطأ", isCorrect: false }
+                    ],
+                    hint: "عند تحقق شروطه يكون قطعياً.",
+                    rationale: "عند تحقق شروطه، الإجماع هو الدليل الوحيد الذي يجمع بين قطعية الثبوت وقطعية الدلالة."
+                },
+                {
+                    question: "اذكر ركنين أساسيين من أركان القياس:",
+                    options: [
+                        { text: "الأصل (المقيس عليه)، والفرع (المقيس)، والعلة (الوصف المشترك)، والحكم", isCorrect: true },
+                        { text: "القرآن، والسنة، والإجماع، والقياس", isCorrect: false },
+                        { text: "السبب، والشرط، والمانع، والصحة", isCorrect: false },
+                        { text: "الواجب، والمندوب، والمباح، والحرام", isCorrect: false }
+                    ],
+                    hint: "أركان القياس أربعة.",
+                    rationale: "أركان القياس هي: الأصل (المقيس عليه)، والفرع (المقيس)، والعلة (الوصف المشترك)، والحكم."
+                },
+                {
+                    question: "ما هو المقصود بـ \"الأصل\" في القياس؟",
+                    options: [
+                        { text: "الواقعة التي ورد فيها نص شرعي", isCorrect: true },
+                        { text: "الواقعة التي لم يرد فيها نص شرعي", isCorrect: false },
+                        { text: "العلة المشتركة بين الواقعتين", isCorrect: false },
+                        { text: "الحكم الشرعي المجرد", isCorrect: false }
+                    ],
+                    hint: "الأصل هو المنصوص عليه.",
+                    rationale: "الأصل في القياس هو الواقعة التي ورد فيها نص شرعي."
+                },
+                {
+                    question: "حجية القياس محل خلاف بين الأصوليين، لكن الجمهور يجعله دليلاً ظنياً.",
+                    options: [
+                        { text: "صح", isCorrect: true },
+                        { text: "خطأ", isCorrect: false }
+                    ],
+                    hint: "الجمهور يحتج بالقياس.",
+                    rationale: "حجية القياس محل خلاف بين الأصوليين، لكن الجمهور يجعله دليلاً ظنياً."
+                },
+                {
+                    question: "ما الفرق الجوهري بين الإجماع السكوتي والإجماع الصريح؟",
+                    options: [
+                        { text: "الصريح هو إبداء كل مجتهد رأيه بالموافقة، والسكوتي هو سكوت المجتهدين الباقين بعد معرفتهم برأي بعضهم", isCorrect: true },
+                        { text: "الصريح هو الإجماع القطعي، والسكوتي هو الإجماع الظني", isCorrect: false },
+                        { text: "لا فرق بينهما", isCorrect: false },
+                        { text: "الصريح للإجماع القديم، والسكوتي للإجماع الحديث", isCorrect: false }
+                    ],
+                    hint: "الصريح تصريح، والسكوتي سكوت.",
+                    rationale: "الإجماع الصريح هو إبداء كل مجتهد رأيه بالموافقة، والسكوتي هو سكوت المجتهدين الباقين بعد معرفتهم برأي بعضهم."
+                },
+                {
+                    question: "تسمى العملية التي يتم فيها تعميم الحكم من الأصل إلى الفرع لوجود الوصف المناسب:",
+                    options: [
+                        { text: "الاستصحاب", isCorrect: false },
+                        { text: "الاستحسان", isCorrect: false },
+                        { text: "العلة", isCorrect: true },
+                        { text: "الإلحاق", isCorrect: false }
+                    ],
+                    hint: "هذه العملية هي لب القياس.",
+                    rationale: "تحديد العلة هو العملية التي يتم فيها تعميم الحكم من الأصل إلى الفرع لوجود الوصف المناسب."
+                },
+                {
+                    question: "لا يُشترط لانعقاد الإجماع انقراض العصر الذي وقع فيه الإجماع.",
+                    options: [
+                        { text: "صح", isCorrect: true },
+                        { text: "خطأ", isCorrect: false }
+                    ],
+                    hint: "محل خلاف أصولي.",
+                    rationale: "مسألة اشتراط انقراض العصر محل خلاف أصولي، والراجح أنه لا يشترط."
+                },
+                {
+                    question: "لماذا يُعتبر الإجماع دليلاً قاطعاً على الحكم؟",
+                    options: [
+                        { text: "لأنه يعتمد على عصمة الأمة من الخطأ في الاتفاق على حكم [اعتماداً على حديث \"لا تجتمع أمتي على ضلالة\"]", isCorrect: true },
+                        { text: "لأنه دليل عقلي محض", isCorrect: false },
+                        { text: "لأنه يتفق مع العرف", isCorrect: false },
+                        { text: "لأنه أسهل طريقة للاستنباط", isCorrect: false }
+                    ],
+                    hint: "يعتمد على حديث نبوي.",
+                    rationale: "يُعتبر الإجماع دليلاً قاطعاً لأنه يعتمد على عصمة الأمة من الخطأ في الاتفاق على حكم، بناءً على حديث \"لا تجتمع أمتي على ضلالة\"."
+                },
+                {
+                    question: "إلحاق النبيذ بالخمر في حكم التحريم، لاشتراكهما في علة الإسكار، يسمى:",
+                    options: [
+                        { text: "الاستحسان", isCorrect: false },
+                        { text: "الاستصحاب", isCorrect: false },
+                        { text: "المصالح المرسلة", isCorrect: false },
+                        { text: "القياس", isCorrect: true }
+                    ],
+                    hint: "إلحاق فرع بأصل لعلة مشتركة.",
+                    rationale: "إلحاق النبيذ بالخمر في حكم التحريم لاشتراكهما في علة الإسكار يسمى قياساً."
+                }
+            ],
+            5: [
+                {
+                    question: "ما هو الدليل الذي يعني **إبقاء الحكم الثابت في الماضي** ما لم يقم دليل على تغييره؟",
+                    options: [
+                        { text: "الاستصحاب", isCorrect: true },
+                        { text: "الاستحسان", isCorrect: false },
+                        { text: "سد الذرائع", isCorrect: false },
+                        { text: "شرع من قبلنا", isCorrect: false }
+                    ],
+                    hint: "يعني استمرار الحالة السابقة.",
+                    rationale: "الاستصحاب هو الدليل الذي يعني إبقاء الحكم الثابت في الماضي ما لم يقم دليل على تغييره."
+                },
+                {
+                    question: "المصالح المرسلة هي تلك المصالح التي شهد الشرع باعتبارها أو إلغائها بنص خاص.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "المرسلة لم يشهد لها بنص.",
+                    rationale: "المصالح المرسلة هي تلك المصالح التي لم يشهد لها الشرع بدليل خاص على اعتبارها أو إلغائها."
+                },
+                {
+                    question: "متى يُحتج بـ \"شرع من قبلنا\" كدليل في الشريعة الإسلامية؟",
+                    options: [
+                        { text: "إذا ورد في شرعنا ولم يرد ما ينسخه أو يلغيه", isCorrect: true },
+                        { text: "مطلقاً دون قيود", isCorrect: false },
+                        { text: "إذا وافق العقل والمنطق", isCorrect: false },
+                        { text: "إذا وافق المصلحة فقط", isCorrect: false }
+                    ],
+                    hint: "بشرط عدم النسخ.",
+                    rationale: "يُحتج بـ \"شرع من قبلنا\" إذا ورد في شرعنا ولم يرد ما ينسخه أو يلغيه."
+                },
+                {
+                    question: "دلالة اللفظ على ما سيق الكلام لأجله مباشرة تسمى:",
+                    options: [
+                        { text: "دلالة المفهوم", isCorrect: false },
+                        { text: "دلالة المنطوق", isCorrect: true },
+                        { text: "دلالة الإشارة", isCorrect: false },
+                        { text: "دلالة الاقتضاء", isCorrect: false }
+                    ],
+                    hint: "ما نطق به اللفظ مباشرة.",
+                    rationale: "دلالة اللفظ على ما سيق الكلام لأجله مباشرة تسمى دلالة المنطوق."
+                },
+                {
+                    question: "قول الصحابي يُعد دليلاً مقيداً عند بعض الأصوليين، وخاصة:",
+                    options: [
+                        { text: "إذا كان الصحابي من العشرة المبشرين بالجنة", isCorrect: false },
+                        { text: "إذا كان الصحابي ممن شهد بدراً", isCorrect: false },
+                        { text: "إذا لم يُخالفه صحابي آخر", isCorrect: true },
+                        { text: "إذا وافق المصلحة", isCorrect: false }
+                    ],
+                    hint: "بشرط عدم المعارضة.",
+                    rationale: "قول الصحابي يُعد دليلاً مقيداً عند بعض الأصوليين، وخاصة إذا لم يُخالفه صحابي آخر."
+                },
+                {
+                    question: "اذكر شرطاً أساسياً من شروط العمل بالمصالح المرسلة:",
+                    options: [
+                        { text: "أن تكون المصلحة حقيقية وضرورية، وأن لا تعارض نصاً شرعياً أو إجماعاً", isCorrect: true },
+                        { text: "أن تكون المصلحة متوافقة مع العرف فقط", isCorrect: false },
+                        { text: "أن تكون المصلحة مذكورة في القرآن", isCorrect: false },
+                        { text: "أن تكون المصلحة متوافقة مع آراء الفقهاء", isCorrect: false }
+                    ],
+                    hint: "الشروط تتعلق بحقيقة المصلحة وعدم معارضتها للنصوص.",
+                    rationale: "من شروط العمل بالمصالح المرسلة: أن تكون المصلحة حقيقية وضرورية، وأن لا تعارض نصاً شرعياً أو إجماعاً."
+                },
+                {
+                    question: "الاستصحاب دليل ضعيف لا يُلجأ إليه إلا عند فقد الأدلة الأخرى.",
+                    options: [
+                        { text: "صح", isCorrect: true },
+                        { text: "خطأ", isCorrect: false }
+                    ],
+                    hint: "هو آخر ما يلجأ إليه.",
+                    rationale: "الاستصحاب دليل ضعيف لا يُلجأ إليه إلا عند فقد الأدلة الأخرى، فهو آخر ما يُصار إليه."
+                },
+                {
+                    question: "إذا فهمنا حكماً من النص بناءً على المسكوت عنه، فإنه يسمى:",
+                    options: [
+                        { text: "دلالة المنطوق", isCorrect: false },
+                        { text: "دلالة الإشارة", isCorrect: false },
+                        { text: "دلالة الاقتضاء", isCorrect: false },
+                        { text: "دلالة المفهوم", isCorrect: true }
+                    ],
+                    hint: "يدل على المسكوت عنه.",
+                    rationale: "إذا فهمنا حكماً من النص بناءً على المسكوت عنه، فإنه يسمى دلالة المفهوم."
+                },
+                {
+                    question: "ما الفرق بين مفهوم الموافقة ومفهوم المخالفة (في الدلالة)؟",
+                    options: [
+                        { text: "مفهوم الموافقة: يُعطى المسكوت عنه نفس حكم المنطوق، مفهوم المخالفة: يُعطى المسكوت عنه عكس حكم المنطوق", isCorrect: true },
+                        { text: "مفهوم الموافقة: يُعطى المسكوت عنه عكس حكم المنطوق، مفهوم المخالفة: يُعطى المسكوت عنه نفس حكم المنطوق", isCorrect: false },
+                        { text: "لا فرق بينهما", isCorrect: false },
+                        { text: "مفهوم الموافقة للمنطوق الصريح، مفهوم المخالفة للمنطوق الضمني", isCorrect: false }
+                    ],
+                    hint: "الموافقة تعني نفس الحكم، المخالفة تعني عكسه.",
+                    rationale: "مفهوم الموافقة: يُعطى المسكوت عنه نفس حكم المنطوق، مفهوم المخالفة: يُعطى المسكوت عنه عكس حكم المنطوق."
+                },
+                {
+                    question: "الأصل في \"شرع من قبلنا\" هو عدم الاحتجاج به مطلقاً.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "الجمهور يحتج به بشروط.",
+                    rationale: "الجمهور يحتج بـ \"شرع من قبلنا\" بشرط عدم وروده في شريعتنا أو عدم نسخه."
+                }
+            ],
+            6: [
+                {
+                    question: "بذل الجهد لاستنباط الحكم الشرعي من أدلته التفصيلية يسمى:",
+                    options: [
+                        { text: "الاجتهاد", isCorrect: true },
+                        { text: "التقليد", isCorrect: false },
+                        { text: "الاستحسان", isCorrect: false },
+                        { text: "الاستدلال", isCorrect: false }
+                    ],
+                    hint: "هذا المبحث هو القسم الأخير من علم الأصول.",
+                    rationale: "الاجتهاد هو بذل الجهد لاستنباط الحكم الشرعي من أدلته التفصيلية."
+                },
+                {
+                    question: "لا يُشترط في المجتهد أن يكون عالماً بمسائل الإجماع والخلاف.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "المجتهد يحتاج لمعرفة سابقة لمنع مخالفة ما اتفق عليه العلماء.",
+                    rationale: "يُشترط في المجتهد أن يكون عالماً بمسائل الإجماع والخلاف ليجتنب مخالفة الإجماع ويستفيد من سعة الخلاف."
+                },
+                {
+                    question: "من هو الشخص الذي يلزمه التقليد ولا يجوز له الاجتهاد؟",
+                    options: [
+                        { text: "المجتهد المطلق", isCorrect: false },
+                        { text: "الفقيه العالم بالأدلة", isCorrect: false },
+                        { text: "العامي أو من لم تتوفر فيه شروط الاجتهاد", isCorrect: true },
+                        { text: "قاضي القضاة", isCorrect: false }
+                    ],
+                    hint: "يلزم التقليد من لا يستطيع النظر في الأدلة.",
+                    rationale: "يلزم التقليد العامي أو من لم تتوفر فيه شروط الاجتهاد، ولا يجوز له الاجتهاد."
+                },
+                {
+                    question: "أي شرط من شروط المجتهد يتعلق بفهم مراد الشارع من خطابه؟",
+                    options: [
+                        { text: "العلم بالقرآن الكريم", isCorrect: false },
+                        { text: "العلم باللغة العربية وأساليبها", isCorrect: true },
+                        { text: "العلم بأصول الفقه", isCorrect: false },
+                        { text: "العلم بالقياس", isCorrect: false }
+                    ],
+                    hint: "اللغة وسيلة لفهم النص.",
+                    rationale: "العلم باللغة العربية وأساليبها من شروط المجتهد، ويتعلق بفهم مراد الشارع من خطابه."
+                },
+                {
+                    question: "التقليد يعني اتباع قول الغير مع معرفة دليله التفصيلي.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "التقليد دون معرفة الدليل.",
+                    rationale: "التقليد هو اتباع قول الغير دون معرفة دليله."
+                },
+                {
+                    question: "اذكر حكماً شرعياً يتعلق بالتقليد للمجتهد المطلق:",
+                    options: [
+                        { text: "يجوز للمجتهد المطلق أن يقلد مجتهداً آخر", isCorrect: false },
+                        { text: "لا يجوز للمجتهد المطلق أن يقلد مجتهداً آخر", isCorrect: true },
+                        { text: "يجب على المجتهد المطلق أن يقلد", isCorrect: false },
+                        { text: "يسن للمجتهد المطلق أن يقلد", isCorrect: false }
+                    ],
+                    hint: "المجتهد المطلق لا يقلد.",
+                    rationale: "لا يجوز للمجتهد المطلق أن يقلد مجتهداً آخر."
+                },
+                {
+                    question: "ما هو الفرق الرئيسي بين المجتهد المطلق والمجتهد المقيد؟",
+                    options: [
+                        { text: "المطلق أعلم من المقيد", isCorrect: false },
+                        { text: "المطلق أقدم من المقيد", isCorrect: false },
+                        { text: "المطلق أكثر ورعاً من المقيد", isCorrect: false },
+                        { text: "المطلق يستنبط الأحكام في جميع أبواب الفقه، والمقيد في مذهب معين أو باب فقهي محدد", isCorrect: true }
+                    ],
+                    hint: "يتعلق بمجال الاجتهاد.",
+                    rationale: "الفرق الرئيسي بين المجتهد المطلق والمجتهد المقيد هو أن المطلق يستنبط الأحكام في جميع أبواب الفقه، والمقيد في مذهب معين أو باب فقهي محدد."
+                },
+                {
+                    question: "لا يجوز تجزئة الاجتهاد، فإما أن يجتهد في كل الفروع أو لا يجتهد.",
+                    options: [
+                        { text: "صح", isCorrect: false },
+                        { text: "خطأ", isCorrect: true }
+                    ],
+                    hint: "أجاز الجمهور التجزئة.",
+                    rationale: "أجاز الجمهور تجزئة الاجتهاد في مسألة أو باب واحد."
+                },
+                {
+                    question: "ما علاقة الاجتهاد بأصول الفقه؟",
+                    options: [
+                        { text: "الاجتهاد هو تطبيق للمنهج الأصولي (قواعد أصول الفقه) على الأدلة التفصيلية لاستنباط الحكم", isCorrect: true },
+                        { text: "لا علاقة بينهما", isCorrect: false },
+                        { text: "الاجتهاد سابق لأصول الفقه", isCorrect: false },
+                        { text: "أصول الفقه فرع من فروع الاجتهاد", isCorrect: false }
+                    ],
+                    hint: "الاجتهاد تطبيق للأصول.",
+                    rationale: "الاجتهاد هو تطبيق للمنهج الأصولي (قواعد أصول الفقه) على الأدلة التفصيلية لاستنباط الحكم."
+                },
+                {
+                    question: "عندما يأخذ طالب العلم برأي إمام معين لعدم قدرته على الترجيح بين الأدلة، فإن هذا يعد:",
+                    options: [
+                        { text: "تقليداً", isCorrect: true },
+                        { text: "اجتهاداً", isCorrect: false },
+                        { text: "تلفيقاً", isCorrect: false },
+                        { text: "استحساناً", isCorrect: false }
+                    ],
+                    hint: "اتباع قول الغير دون دليل.",
+                    rationale: "عندما يأخذ طالب العلم برأي إمام معين لعدم قدرته على الترجيح بين الأدلة، فإن هذا يعد تقليداً."
+                }
+            ],
+            // الاختبار النهائي (جميع الأسئلة عشوائياً)
+            7: []
+        };
+
+        // إنشاء الاختبار النهائي (60 سؤالاً عشوائياً)
+        function createFinalExam() {
+            let allQuestions = [];
+            
+            // جمع جميع الأسئلة من المحاضرات الست
+            for (let i = 1; i <= 6; i++) {
+                allQuestions = allQuestions.concat(quizzes[i]);
+            }
+            
+            // خلط الأسئلة عشوائياً
+            allQuestions = shuffleArray(allQuestions);
+            
+            // أخذ أول 60 سؤالاً فقط
+            quizzes[7] = allQuestions.slice(0, 60);
+        }
+
+        // دالة خلط المصفوفة عشوائياً
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // ----------------------------------------------------
+        // متغيرات الحالة العامة للاختبار
+        // ----------------------------------------------------
+        let currentLessonId = null;
+        let currentQuizData = []; 
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let hasAnswered = false; // لمنع الإجابة المتعددة على السؤال الواحد
+        let isFinalExam = false; // هل الاختبار الحالي هو الاختبار النهائي؟
+
+        // ----------------------------------------------------
+        // عناصر DOM
+        // ----------------------------------------------------
+        const lessonsListEl = document.getElementById('lessonsList');
+        const homeViewEl = document.getElementById('homeView');
+        const lessonViewEl = document.getElementById('lessonView');
+        const quizViewEl = document.getElementById('quizView');
+        const backButtonEl = document.getElementById('backButton');
+        const mainTitleEl = document.getElementById('mainTitle');
+        
+        const lessonTitleEl = document.getElementById('lessonTitle');
+        const videoFrameEl = document.getElementById('videoFrame');
+        const youtubeLinkEl = document.getElementById('youtubeLink');
+        const lessonContentEl = document.getElementById('lessonContent');
+        const startQuizButtonEl = document.getElementById('startQuizButton');
+
+        const quizLessonTitleEl = document.getElementById('quizLessonTitle');
+        const currentQuestionNumEl = document.getElementById('currentQuestionNum');
+        const totalQuestionsNumEl = document.getElementById('totalQuestionsNum');
+        const progressBarEl = document.getElementById('progressBar');
+        const questionTextEl = document.getElementById('questionText');
+        const answerOptionsEl = document.getElementById('answerOptions');
+        const rationaleContainerEl = document.getElementById('rationaleContainer');
+        const rationaleTextEl = document.getElementById('rationaleText');
+        const hintContainerEl = document.getElementById('hintContainer');
+        const hintTextEl = document.getElementById('hintText');
+        const nextButtonEl = document.getElementById('nextButton');
+        const showHintButtonEl = document.getElementById('showHintButton');
+        const resultsViewEl = document.getElementById('resultsView');
+        const finalScoreEl = document.getElementById('finalScore');
+        const totalQuestionsResultEl = document.getElementById('totalQuestionsResult');
+        const resultMessageEl = document.getElementById('resultMessage');
+        const percentageEl = document.getElementById('percentage');
+        const gradeEl = document.getElementById('grade');
+        const retryButtonEl = document.getElementById('retryButton');
+
+        // دالة تهيئة التطبيق (التشغيل الأولي)
+        function init() {
+            createFinalExam(); // إنشاء الاختبار النهائي
+            renderLessonsList();
+        }
+
+        // دالة عرض قائمة الدروس
+        function renderLessonsList() {
+            lessonsListEl.innerHTML = lessons.map(lesson => `
+                <div onclick="openLesson(${lesson.id})" class="bg-white p-5 rounded-xl shadow hover:shadow-md cursor-pointer transition-all active-scale flex items-center border border-gray-100 lesson-card">
+                    <div class="bg-tasees-gray_light w-12 h-12 rounded-full flex items-center justify-center text-tasees-orange_dark ml-4 shrink-0">
+                        <span class="font-bold text-lg">${lesson.id}</span>
+                    </div>
+                    <div class="flex-grow">
+                        <h3 class="font-bold text-lg text-gray-800">${lesson.title}</h3>
+                        <p class="text-xs text-gray-500 mt-1">10 أسئلة - اضغط للمشاهدة والقراءة</p>
+                    </div>
+                    <div class="text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // دالة فتح درس معين
+        function openLesson(id) {
+            const lesson = lessons.find(l => l.id === id);
+            if (!lesson) return;
+
+            currentLessonId = id;
+            isFinalExam = false;
+
+            // تعبئة البيانات
+            lessonTitleEl.textContent = lesson.title;
+            videoFrameEl.src = `https://www.youtube.com/embed/${lesson.videoId}`;
+            youtubeLinkEl.href = `https://www.youtube.com/watch?v=${lesson.videoId}`;
+            lessonContentEl.textContent = lesson.content;
+            
+            // تحديث زر الاختبار
+            const quizExists = quizzes[id] && quizzes[id].length > 0;
+            startQuizButtonEl.onclick = () => startQuiz(id);
+            if (quizExists) {
+                startQuizButtonEl.classList.remove('opacity-50', 'pointer-events-none');
+                startQuizButtonEl.disabled = false;
+                startQuizButtonEl.textContent = 'ابدأ اختبار المحاضرة';
+            } else {
+                startQuizButtonEl.classList.add('opacity-50', 'pointer-events-none');
+                startQuizButtonEl.disabled = true;
+                startQuizButtonEl.textContent = 'لا يوجد اختبار متاح لهذه المحاضرة حاليًا';
+            }
+
+            // التبديل بين الواجهات
+            homeViewEl.classList.add('hidden');
+            lessonViewEl.classList.remove('hidden');
+            quizViewEl.classList.add('hidden'); // إخفاء عرض الاختبار
+            resultsViewEl.classList.add('hidden'); // إخفاء عرض النتيجة
+            backButtonEl.classList.remove('hidden');
+            mainTitleEl.textContent = lesson.title;
+            
+            // الصعود للأعلى
+            window.scrollTo(0, 0);
+        }
+
+        // دالة بدء الاختبار النهائي
+        function startFinalExam() {
+            isFinalExam = true;
+            currentLessonId = 7;
+            
+            if (!quizzes[7] || quizzes[7].length === 0) {
+                createFinalExam();
+            }
+            
+            currentQuizData = quizzes[7];
+            currentQuestionIndex = 0;
+            score = 0;
+            hasAnswered = false;
+
+            // تحديث واجهة الاختبار
+            quizLessonTitleEl.textContent = "الاختبار النهائي الشامل";
+            totalQuestionsNumEl.textContent = currentQuizData.length;
+            
+            // عرض واجهة الاختبار وإخفاء واجهة الدرس
+            homeViewEl.classList.add('hidden');
+            lessonViewEl.classList.add('hidden');
+            quizViewEl.classList.remove('hidden');
+            resultsViewEl.classList.add('hidden');
+            backButtonEl.classList.remove('hidden');
+
+            renderQuestion();
+            mainTitleEl.textContent = "الاختبار النهائي الشامل";
+        }
+
+        // دالة بدء الاختبار
+        function startQuiz(id) {
+            if (!quizzes[id] || quizzes[id].length === 0) return;
+
+            isFinalExam = (id === 7);
+            currentQuizData = quizzes[id];
+            currentQuestionIndex = 0;
+            score = 0;
+            hasAnswered = false;
+
+            // تحديث واجهة الاختبار
+            const lesson = isFinalExam ? {title: "الاختبار النهائي الشامل"} : lessons.find(l => l.id === id);
+            quizLessonTitleEl.textContent = lesson.title;
+            totalQuestionsNumEl.textContent = currentQuizData.length;
+            
+            // عرض واجهة الاختبار وإخفاء واجهة الدرس
+            lessonViewEl.classList.add('hidden');
+            quizViewEl.classList.remove('hidden');
+            resultsViewEl.classList.add('hidden');
+
+            renderQuestion();
+            mainTitleEl.textContent = isFinalExam ? "الاختبار النهائي الشامل" : "اختبار " + lesson.title;
+        }
+
+        // دالة عرض السؤال
+        function renderQuestion() {
+            if (currentQuestionIndex >= currentQuizData.length) {
+                showResults();
+                return;
+            }
+
+            const questionData = currentQuizData[currentQuestionIndex];
+            
+            // إعادة ضبط الحالة
+            hasAnswered = false;
+            rationaleContainerEl.classList.add('hidden');
+            nextButtonEl.disabled = true;
+            nextButtonEl.textContent = (currentQuestionIndex === currentQuizData.length - 1) ? 'عرض النتيجة' : 'السؤال التالي';
+            hintContainerEl.classList.add('hidden');
+            showHintButtonEl.classList.remove('hidden');
+            
+            // تحديث بيانات السؤال والتقدم
+            currentQuestionNumEl.textContent = currentQuestionIndex + 1;
+            progressBarEl.style.width = `${((currentQuestionIndex) / currentQuizData.length) * 100}%`;
+            questionTextEl.textContent = (currentQuestionIndex + 1) + '. ' + questionData.question;
+            
+            // عرض خيارات الإجابة
+            answerOptionsEl.innerHTML = questionData.options.map((option, index) => `
+                <div 
+                    class="answer-option bg-white p-4 rounded-lg shadow-sm border border-gray-200" 
+                    data-index="${index}" 
+                    onclick="selectAnswer(${index})"
+                >
+                    <span class="font-semibold ml-2">${String.fromCharCode(0x0623 + index)} - </span>
+                    <span>${option.text}</span>
+                </div>
+            `).join('');
+
+            window.scrollTo(0, 0); // الصعود للأعلى لبداية السؤال
+        }
+
+        // دالة تحديد الإجابة
+        function selectAnswer(selectedIndex) {
+            if (hasAnswered) return;
+
+            hasAnswered = true;
+            nextButtonEl.disabled = false;
+            
+            const questionData = currentQuizData[currentQuestionIndex];
+            const options = answerOptionsEl.querySelectorAll('.answer-option');
+            
+            let isCorrect = questionData.options[selectedIndex].isCorrect;
+
+            // تحديث الأنماط والنتيجة
+            options.forEach((option, index) => {
+                const optionData = questionData.options[index];
+                const isSelected = (index === selectedIndex);
+
+                option.classList.remove('hover:shadow-md');
+                option.style.pointerEvents = 'none'; // تعطيل النقر بعد الإجابة
+
+                if (optionData.isCorrect) {
+                    option.classList.add('correct');
+                } else if (isSelected) {
+                    option.classList.add('incorrect');
+                }
+            });
+
+            // عرض التوضيح والنتيجة
+            rationaleTextEl.textContent = questionData.rationale;
+            rationaleContainerEl.classList.remove('hidden');
+            
+            if (isCorrect) {
+                score++;
+            }
+            showHintButtonEl.classList.add('hidden'); // إخفاء زر التلميح بعد الإجابة
+        }
+
+        // دالة عرض التلميح
+        function showHint() {
+            const questionData = currentQuizData[currentQuestionIndex];
+            hintTextEl.textContent = questionData.hint;
+            hintContainerEl.classList.remove('hidden');
+            showHintButtonEl.classList.add('hidden');
+        }
+
+        // دالة الانتقال للسؤال التالي أو إنهاء الاختبار
+        function nextQuestion() {
+            if (!hasAnswered) return; // يجب الإجابة أولاً
+
+            currentQuestionIndex++;
+            renderQuestion();
+        }
+        
+        // دالة إعادة الاختبار
+        function retryQuiz() {
+            if (isFinalExam) {
+                startFinalExam();
+            } else {
+                startQuiz(currentLessonId);
+            }
+        }
+        
+        // دالة عرض النتائج النهائية
+        function showResults() {
+            // حساب النسبة المئوية والدرجة
+            const percentage = (score / currentQuizData.length) * 100;
+            let message = "";
+            let grade = "";
+            
+            if (percentage === 100) {
+                message = "مبارك! لديك فهم ممتاز. استمر في التفوق!";
+                grade = "امتياز";
+            } else if (percentage >= 90) {
+                message = "أداء ممتاز! لديك فهم قوي للمادة.";
+                grade = "ممتاز";
+            } else if (percentage >= 80) {
+                message = "أداء جيد جداً! يمكنك مراجعة بعض النقاط لتحسين فهمك.";
+                grade = "جيد جداً";
+            } else if (percentage >= 70) {
+                message = "أداء جيد! ننصحك بمراجعة الدروس والملخصات.";
+                grade = "جيد";
+            } else if (percentage >= 60) {
+                message = "مقبول. تحتاج لمزيد من المراجعة والتركيز.";
+                grade = "مقبول";
+            } else {
+                message = "تحتاج لمزيد من الجهد. ننصحك بمشاهدة المحاضرات ومراجعة الملخصات قبل إعادة الاختبار.";
+                grade = "ضعيف";
+            }
+
+            // عرض النتائج
+            finalScoreEl.textContent = score;
+            totalQuestionsResultEl.textContent = currentQuizData.length;
+            percentageEl.textContent = percentage.toFixed(1) + "%";
+            gradeEl.textContent = grade;
+            resultMessageEl.textContent = message;
+
+            // إظهار زر إعادة الاختبار فقط للاختبارات الفردية
+            if (isFinalExam) {
+                retryButtonEl.style.display = 'none';
+            } else {
+                retryButtonEl.style.display = 'block';
+            }
+
+            // التبديل بين الواجهات
+            quizViewEl.classList.add('hidden');
+            resultsViewEl.classList.remove('hidden');
+            
+            // تحديث شريط التقدم للوصول لـ 100%
+            progressBarEl.style.width = `100%`;
+            mainTitleEl.textContent = "نتائج الاختبار";
+            window.scrollTo(0, 0);
+        }
+
+        // دالة العودة للقائمة الرئيسية
+        function goHome() {
+            // إيقاف الفيديو عند الخروج من view الدرس
+            if (!lessonViewEl.classList.contains('hidden')) {
+                videoFrameEl.src = "";
+            }
+            
+            // التبديل بين الواجهات
+            lessonViewEl.classList.add('hidden');
+            quizViewEl.classList.add('hidden');
+            resultsViewEl.classList.add('hidden');
+            homeViewEl.classList.remove('hidden');
+            backButtonEl.classList.add('hidden');
+            mainTitleEl.textContent = "تيسير أصول الفقه";
+        }
+
+        // تشغيل التطبيق
+        init();
+    </script>
+</body>
+</html>
